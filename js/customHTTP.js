@@ -1,55 +1,76 @@
-function customHTTP() {
-  this.http = new XMLHttpRequest();
-}
+console.log('Connected to app.js');
+/**
+ *  Custom HTTP Library
+ *  Library for making HTTP requests
+ * 
+ *  @version 2.0.0
+ *  @author Warren Leyes
+ *  @license MIT
+ *  
+ **/
 
-// Make an HTTP GET Request
-customHTTP.prototype.get = function(url, callback) { // future projects refer to callback as cb
-  this.http.open('GET', url, true);
+ class customHTTP {
+  // HTTP GET request 
+  get(url) {
+    return new Promise((resolve, reject) => {
+      fetch(url)
+      .then(response => response.json())
+      .then(data => resolve(data))
+      .catch(error => reject(error));
+    });
+  }
+ 
 
-  let self = this; // as workaround for lexacil arrow function =>
-  this.http.onload = function() {
-    if(self.http.status === 200) {
-      callback(null, self.http.responseText);
-    } else {
-      callback(`Error: ${self.http.status}`); // todo: add case for friendly error names
+
+ // HTTP POST request
+ post(url, data) {
+  return new Promise((resolve, reject) => {
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+      .then(response => response.json())
+      .then(data => resolve(data))
+      .catch(error => reject(error));
+    });
+  }
+
+
+
+  // HTTP PUT request
+  put(url, data) {
+    return new Promise((resolve, reject) => {
+      fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+        .then(response => response.json())
+        .then(data => resolve(data))
+        .catch(error => reject(error));
+      });
     }
-  }
-  this.http.send();
-}
 
-// Make an HTTP POST Request
-customHTTP.prototype.post = function(url, data, callback) {
-  this.http.open('POST', url, true);
-  this.http.setRequestHeader('Content-type', 'application/json');
-  let self = this;
-  this.http.onload = function() {
-    callback(null, self.http.responseText);
-  }
-  this.http.send(JSON.stringify(data));
-} 
 
-// Make an HTTP PUT Request
-customHTTP.prototype.put = function(url, data, callback) {
-  this.http.open('PUT', url, true);
-  this.http.setRequestHeader('Content-type', 'application/json');
-  let self = this;
-  this.http.onload = function() {
-    callback(null, self.http.responseText);
-  }
-  this.http.send(JSON.stringify(data));
-}
 
-// Make an HTTP DELETE Request
-customHTTP.prototype.delete = function(url, callback) { 
-  this.http.open('DELETE', url, true);
+    // HTTP Delete request
+    delete(url) {
+      return new Promise((resolve, reject) => {
+        fetch(url, {
+          method: 'DELETE',
+          headers: {
+            'Content-type': 'application/json'
+          }
+        })
+          .then(response => response.json())
+          .then(() => resolve('Resource Deleted...'))
+          .catch(error => reject(error));
+        });
+      }
+} // end customHTTP class
 
-  let self = this;
-  this.http.onload = function() {
-    if(self.http.status === 200) {
-      callback(null, 'Post Deleted');
-    } else {
-      callback(`Error: ${self.http.status}`); // todo: add case for friendly error names
-    }
-  }
-  this.http.send();
-}
